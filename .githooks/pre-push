@@ -1,0 +1,36 @@
+#!/bin/bash
+# XSG pre-push: 全量验证
+set -euo pipefail
+
+echo "============================================"
+echo "[pre-push] XSG 全量验证"
+echo "============================================"
+
+echo ""
+echo "[1/2] ==> shellcheck"
+if command -v shellcheck &>/dev/null; then
+    shellcheck *.sh 2>&1 || {
+        echo "[pre-push] shellcheck 发现问题"
+        exit 1
+    }
+    echo "       PASS"
+else
+    echo "       SKIP (shellcheck 未安装)"
+fi
+
+echo ""
+echo "[2/2] ==> shfmt 格式检查"
+if command -v shfmt &>/dev/null; then
+    if shfmt -d . 2>&1 | grep -q .; then
+        echo "       FAIL — 运行 shfmt -w . 修复"
+        exit 1
+    fi
+    echo "       PASS"
+else
+    echo "       SKIP (shfmt 未安装)"
+fi
+
+echo ""
+echo "============================================"
+echo "[pre-push] ALL PASS"
+echo "============================================"

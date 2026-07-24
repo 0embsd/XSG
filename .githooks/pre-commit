@@ -1,0 +1,19 @@
+#!/bin/bash
+# XSG pre-commit: shellcheck 快速检查
+set -euo pipefail
+
+STAGED_SH=$(git diff --cached --name-only --diff-filter=ACM | grep '\.sh$' || true)
+
+if [ -z "$STAGED_SH" ]; then
+    echo "[pre-commit] 无 Shell 文件变更，跳过"
+    exit 0
+fi
+
+echo "[pre-commit] ==> shellcheck"
+for f in $STAGED_SH; do
+    shellcheck -f gcc "$f" 2>&1 || {
+        echo "[pre-commit] shellcheck 发现问题，请修复后重试"
+        exit 1
+    }
+done
+echo "[pre-commit] OK"
