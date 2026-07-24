@@ -45,4 +45,4 @@ sudo bash xsg.sh
 
 ## License
 
-MIT
+GNU AGPL 3.0
